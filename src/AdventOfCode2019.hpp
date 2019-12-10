@@ -1,5 +1,4 @@
-#ifndef ADVENTOFCODE2019_HPP
-#define ADVENTOFCODE2019_HPP
+#pragma once
 
 #include <iostream>
 #include <fstream>
@@ -7,18 +6,24 @@
 #include <string>
 #include <algorithm>
 #include <numeric>
+#include <regex>
+#include <vector>
+#include <map>
+#include <variant>
 
 #include "common/Console.hpp"
 #include "common/InputReader.hpp"
 
-namespace aoc {
+namespace AoC {
     namespace A {
         int day01();
+        int day02();
+        int day03();
     }
 
     namespace B {
         int day01();
+        int day02();
+        int day03();
     }
 }
-
-#endif
