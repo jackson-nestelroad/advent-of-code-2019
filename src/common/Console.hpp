@@ -1,37 +1,39 @@
-#ifndef CONSOLE_HPP
-#define CONSOLE_HPP
+#pragma once
 
 #include <iostream>
 
 namespace console {
-
     static std::ostream &console = std::cout;
 
     inline void log(void) {
-        std::cout << std::endl;
+        console << std::endl;
     }
 
-    template<class First>
+    template <class First>
     void log(const First &first) {
         console << first << std::endl;
     }
 
-    template<class First, class... Rest>
+    template <class First, class... Rest>
     void log(const First &first, const Rest &... rest) {
-        console << first << std::endl;
+        console << first << ' ';
         log(rest...);
     }
 
-    template<class First>
-    void string(const First &first) {
-        console << first << std::endl;
+    inline void fatal(void) {
+        console << std::endl;
+        exit(-1);
     }
 
-    template<class First, class... Rest>
-    void string(const First &first, const Rest &... rest) {
+    template <class First>
+    void fatal(const First &first) {
+        console << first << std::endl;
+        exit(-1);
+    }
+
+    template <class First, class... Rest>
+    void fatal(const First &first, const Rest &... rest) {
         console << first;
-        string(rest...);
+        fatal(rest...);
     }
 }
-
-#endif
