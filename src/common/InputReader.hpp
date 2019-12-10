@@ -1,5 +1,4 @@
-#ifndef INPUTREADER_HPP
-#define INPUTREADER_HPP
+#pragma once
 
 #include <iostream>
 #include <fstream>
@@ -12,14 +11,39 @@
 
 class InputReader {
 private:
+    // Represents a single separated value in an input stream
+    template <typename T, char delim = '\n'>
+    class Value {
+    private:
+        T data;
+
+    public:
+        friend std::istream &operator>>(std::istream &input, Value<T, delim> &value) {
+            if (!(input >> value.data)) {
+                return input;
+            }
+            if (input.peek() == delim) {
+                input.ignore();
+            }
+            else {
+                input.clear();
+            }
+            return input;
+        }
+
+        operator T() const {
+            return data;
+        }
+    };
     // Represents a single line in an input stream
+    template <char delim = '\n'>
     class Line {
     private:
         std::string data;
 
     public:
-        friend std::istream &operator>>(std::istream &input, Line &line) {
-            std::getline(input, line.data);
+        friend std::istream &operator>>(std::istream &input, Line<delim> &line) {
+            std::getline(input, line.data, delim);
             return input;
         }
 
@@ -28,29 +52,45 @@ private:
         }
     };
 
-public:
-    template <typename T>
-    static std::vector<T> readFile(std::string_view fileName, const std::function<T(const std::string &)> parser) {
+    static std::ifstream openFile(std::string_view fileName) {
         std::ifstream file { fileName.data() };
         if (!file) {
             std::cerr << "Failed to open file " << fileName << std::endl;
             exit(-1);
         }
+        return file;
+    }
 
-        std::vector<T> readInput;
-        std::transform(std::istream_iterator<Line>(file), std::istream_iterator<Line>(), std::back_inserter(readInput), parser);
+public:
+    template <typename Out, char delim = '\n'>
+    static std::vector<Out> readFile(std::string_view fileName) {
+        auto file = openFile(fileName);
+
+        return std::vector<Out>(std::istream_iterator<Value<Out, delim>>(file), std::istream_iterator<Value<Out, delim>>());
+    }
+
+    template <typename In, typename Out, char delim = '\n'>
+    static std::vector<Out> readFile(std::string_view fileName, const std::function<Out(const In &)> &parser) {
+        auto file = openFile(fileName);
+
+        std::vector<Out> readInput;
+        std::transform(std::istream_iterator<Value<Out, delim>>(file), std::istream_iterator<Value<Out, delim>>(), readInput.begin(), parser);
         return readInput;
     }
 
-    static std::vector<std::string> readFile(std::string_view fileName) {
-        std::ifstream file { fileName.data() };
-        if (!file) {
-            std::cerr << "Failed to open file " << fileName << std::endl;
-            exit(-1);
-        }
+    template <char delim = '\n'>
+    static std::vector<std::string> readLines(std::string_view fileName) {
+        auto file = openFile(fileName);
 
-        return std::vector<std::string>(std::istream_iterator<Line>(file), std::istream_iterator<Line>());
+        return std::vector<std::string>(std::istream_iterator<Line<delim>>(file), std::istream_iterator<Line<delim>>());
+    }
+
+    template <typename Out, char delim = '\n'>
+    static std::vector<Out> readLines(std::string_view fileName, const std::function<Out(const std::string &)> &parser) {
+        auto file = openFile(fileName);
+
+        std::vector<Out> readInput;
+        std::transform(std::istream_iterator<Line<delim>>(file), std::istream_iterator<Line<delim>>(), readInput.begin(), parser);
+        return readInput;
     }
 };
-
-#endif
