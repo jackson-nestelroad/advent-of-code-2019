@@ -38,7 +38,7 @@ namespace IntCode {
 }
 
 int AoC::A::day02() {
-    auto input = InputReader::readFile<int, ','>("input/02.txt");
+    auto input = in::readFile<in::value<int, ','>>("input/02.txt");
     IntCode::Computer comp { input };
 
     comp[1] = 12;
@@ -50,7 +50,7 @@ int AoC::A::day02() {
 }
 
 int AoC::B::day02() {
-    auto input = InputReader::readFile<int, ','>("input/02.txt");
+    auto input = in::readFile<in::value<int, ','>>("input/02.txt");
 
     for (int noun = 0; noun <= 99; ++noun) {
         input[1] = noun;

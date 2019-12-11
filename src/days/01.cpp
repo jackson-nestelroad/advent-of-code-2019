@@ -13,7 +13,7 @@ int fuelRequirementRecursive(int mass, int result = 0) {
 }
 
 int AoC::A::day01() {
-    auto input = InputReader::readFile<int>("input/01.txt");
+    auto input = in::readFile<in::value<int, '\n'>>("input/01.txt");
 
     std::transform(input.begin(), input.end(), input.begin(), fuelRequirement);
 
@@ -21,7 +21,7 @@ int AoC::A::day01() {
 }
 
 int AoC::B::day01() {
-    auto input = InputReader::readFile<int>("input/01.txt");
+    auto input = in::readFile<in::value<int, '\n'>>("input/01.txt");
 
     std::transform(input.begin(), input.end(), input.begin(), [](auto mass) { return fuelRequirementRecursive(mass); });
 
