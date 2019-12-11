@@ -18,7 +18,7 @@ namespace IntCode {
         Computer(const Integers &data) : data(data) { }
 
         void run() {
-            int ip = 0;
+            std::size_t ip = 0;
             running = true;
             while (running && ip < data.size()) {
                 switch (data[ip]) {
