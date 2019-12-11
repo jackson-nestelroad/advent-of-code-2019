@@ -51,7 +51,7 @@ namespace in {
     // Specialization for no delimiter given
     template <typename T>
     struct value<T, 0> : wrapper<T> {
-        friend std::istream &operator>>(std::istream &input, value<T, '\0'> &value) {
+        friend std::istream &operator>>(std::istream &input, value<T, 0> &value) {
             in >> value.data;
             return in;
         }
