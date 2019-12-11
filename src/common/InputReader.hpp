@@ -35,16 +35,16 @@ namespace in {
     template <typename T, char delim = 0>
     struct value : wrapper<T> {
         friend std::istream &operator>>(std::istream &input, value<T, delim> &value) {
-            if (!(in >> value.data)) {
-                return in;
+            if (!(input >> value.data)) {
+                return input;
             }
-            if (in.peek() == delim) {
-                in.ignore();
+            if (input.peek() == delim) {
+                input.ignore();
             }
             else {
-                in.clear();
+                input.clear();
             }
-            return in;
+            return input;
         }
     };
 
