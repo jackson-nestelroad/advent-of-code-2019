@@ -88,7 +88,7 @@ namespace in {
         // Opens a file stream pointer to be moved across different functions
         std::unique_ptr<std::istream> openFilePtr(std::string_view fileName) {
             std::unique_ptr<std::ifstream> file(new std::ifstream(fileName.data()));
-            if (!file.get()) {
+            if (!*file.get()) {
                 console::fatal("Failed to open file ", fileName, ".");
             }
             return file;
