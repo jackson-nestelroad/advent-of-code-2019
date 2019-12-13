@@ -42,6 +42,7 @@ namespace IntCode2 {
                 case Immediate: return data[ip + pos];
                 default: console::fatal("Unexpected address mode at position ", ip);
             }
+            return data[ip];
         }
 
         inline int &param(int modes, const int pos) {
