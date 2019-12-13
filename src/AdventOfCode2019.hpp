@@ -23,11 +23,55 @@ namespace AoC {
         int day01();
         int day02();
         int day03();
+        int day04();
+        int day05();
+        int day06();
+        int day07();
+        int day08();
+        int day09();
+        int day10();
+        int day11();
+        int day12();
+        int day13();
+        int day14();
+        int day15();
+        int day16();
+        int day17();
+        int day18();
+        int day19();
+        int day20();
+        int day21();
+        int day22();
+        int day33();
+        int day24();
+        int day25();
     }
 
     namespace B {
         int day01();
         int day02();
         int day03();
+        int day04();
+        int day05();
+        int day06();
+        int day07();
+        int day08();
+        int day09();
+        int day10();
+        int day11();
+        int day12();
+        int day13();
+        int day14();
+        int day15();
+        int day16();
+        int day17();
+        int day18();
+        int day19();
+        int day20();
+        int day21();
+        int day22();
+        int day33();
+        int day24();
+        int day25();
     }
 }
