@@ -28,7 +28,7 @@ namespace AoC {
         int day06();
         int day07();
         int day08();
-        int day09();
+        long long day09();
         int day10();
         int day11();
         int day12();
@@ -56,7 +56,7 @@ namespace AoC {
         int day06();
         int day07();
         int day08();
-        int day09();
+        long long day09();
         int day10();
         int day11();
         int day12();

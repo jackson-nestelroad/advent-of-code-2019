@@ -5,7 +5,7 @@
 
 #include "AdventOfCode2019.hpp"
 
-void run(const std::string &text, const std::function<int()> &solution) {
+void run(const std::string &text, const std::function<long long()> &solution) {
     auto start = std::chrono::system_clock::now().time_since_epoch();
     console::log(text, solution());
     auto end = std::chrono::system_clock::now().time_since_epoch();
@@ -15,7 +15,7 @@ void run(const std::string &text, const std::function<int()> &solution) {
 }
 
 int main() {
-    run("Part A: ", AoC::A::day02);
-    run("Part B: ", AoC::B::day02);
+    run("Part A: ", AoC::A::day09);
+    run("Part B: ", AoC::B::day09);
     return 0;
 }
