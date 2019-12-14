@@ -52,8 +52,8 @@ namespace in {
     template <typename T>
     struct value<T, 0> : wrapper<T> {
         friend std::istream &operator>>(std::istream &input, value<T, 0> &value) {
-            in >> value.data;
-            return in;
+            input >> value.data;
+            return input;
         }
     };
 
