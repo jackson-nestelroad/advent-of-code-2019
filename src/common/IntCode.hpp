@@ -154,6 +154,14 @@ namespace IntCode {
             return finished;
         }
 
+        bool hasInput() {
+            return !in.empty();
+        }
+
+        bool hasOutput() {
+            return !out.empty();
+        }
+
         Status getStatus() {
             return status;
         }
