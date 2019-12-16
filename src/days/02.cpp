@@ -1,6 +1,6 @@
 #include "../AdventOfCode2019.hpp"
 
-namespace IntCode {
+namespace IntCode1 {
     using Integers = std::vector<int>;
 
     enum Instructions {
@@ -39,7 +39,7 @@ namespace IntCode {
 
 int AoC::A::day02() {
     auto input = in::readFile<in::value<int, ','>>("input/02.txt");
-    IntCode::Computer comp { input };
+    IntCode1::Computer comp { input };
 
     comp[1] = 12;
     comp[2] = 2;
@@ -56,7 +56,7 @@ int AoC::B::day02() {
         input[1] = noun;
         for (int verb = 0; verb <= 99; ++verb) {
             input[2] = verb;
-            IntCode::Computer comp { std::vector(input) };
+            IntCode1::Computer comp { std::vector(input) };
             comp.run();
             if (comp[0] == 19690720) {
                 return 100 * noun + verb;
