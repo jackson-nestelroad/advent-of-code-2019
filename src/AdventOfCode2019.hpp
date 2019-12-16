@@ -21,6 +21,7 @@
 #include "common/Console.hpp"
 #include "common/InputReader.hpp"
 #include "common/IntCode.hpp"
+#include "common/Integer.hpp"
 
 namespace AoC {
     namespace A {
@@ -63,7 +64,7 @@ namespace AoC {
         long long day09();
         int day10();
         int day11();
-        int day12();
+        long long day12();
         int day13();
         int day14();
         int day15();
