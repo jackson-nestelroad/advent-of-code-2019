@@ -22,6 +22,7 @@
 #include "common/InputReader.hpp"
 #include "common/IntCode.hpp"
 #include "common/Integer.hpp"
+#include "common/Templates.hpp"
 
 namespace AoC {
     namespace A {
