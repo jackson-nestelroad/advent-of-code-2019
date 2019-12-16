@@ -47,7 +47,7 @@ namespace IntCode4 {
 
         Int read(const Int modes, const Int pos) {
             int paramMode = (modes / POW10[pos - 1]) % 10;
-            std::size_t address;
+            std::size_t address { };
             switch (paramMode) {
                 case Position: address = data[ip + pos]; break;
                 case Immediate: address = ip + pos; break;
@@ -62,7 +62,7 @@ namespace IntCode4 {
 
         Int &write(const Int modes, const Int pos) {
             int paramMode = (modes / POW10[pos - 1]) % 10;
-            std::size_t address;
+            std::size_t address { };
             switch (paramMode) {
                 case Position: address = data[ip + pos]; break;
                 case Relative: address = rb + data[ip + pos]; break;
