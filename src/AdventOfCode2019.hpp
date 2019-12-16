@@ -6,17 +6,21 @@
 #include <string>
 #include <algorithm>
 #include <numeric>
+#include <bitset>
 #include <thread>
 #include <future>
 #include <regex>
 #include <vector>
 #include <set>
 #include <map>
+#include <unordered_set>
+#include <unordered_map>
 #include <optional>
 #include <variant>
 
 #include "common/Console.hpp"
 #include "common/InputReader.hpp"
+#include "common/IntCode.hpp"
 
 namespace AoC {
     namespace A {
