@@ -4,6 +4,7 @@
 #include <fstream>
 #include <sstream>
 #include <string>
+#include <regex>
 #include <algorithm>
 #include <numeric>
 #include <bitset>
@@ -39,7 +40,7 @@ namespace AoC {
         int day11();
         int day12();
         int day13();
-        int day14();
+        long long day14();
         int day15();
         int day16();
         int day17();
@@ -67,7 +68,7 @@ namespace AoC {
         int day11();
         long long day12();
         int day13();
-        int day14();
+        long long day14();
         int day15();
         int day16();
         int day17();
