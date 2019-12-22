@@ -11,6 +11,7 @@
 #include <thread>
 #include <future>
 #include <regex>
+#include <array>
 #include <vector>
 #include <list>
 #include <queue>
