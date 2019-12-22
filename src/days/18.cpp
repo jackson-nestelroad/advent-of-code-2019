@@ -1,14 +1,18 @@
 #include "../AdventOfCode2019.hpp"
 
+struct coordinate {
+    std::size_t row;
+    std::size_t col;
+};
+
+static bool operator==(const coordinate &a, const coordinate &b) {
+    return std::tie(a.row, a.col) == std::tie(b.row, b.col);
+}
+
 using vault_map = std::vector<std::string>;
 using key = char;
-using keychain = std::unordered_set<key>;
-
-enum class Tile {
-    Wall = '#',
-    Open = '.',
-    Entrance = '@'
-};
+using keychain = uint32_t;
+using path = std::vector<coordinate>;
 
 struct key_pair {
     key from;
@@ -22,22 +26,6 @@ bool operator==(const key_pair &a, const key_pair &b) {
 struct key_pair_data {
     std::size_t distance;
     keychain doors;
-};
-
-struct coordinate {
-    std::size_t row;
-    std::size_t col;
-};
-
-static bool operator==(const coordinate &a, const coordinate &b) {
-    return std::tie(a.row, a.col) == std::tie(b.row, b.col);
-}
-
-struct state {
-    coordinate position;
-    keychain keys;
-    keychain doors;
-    std::size_t distance;
 };
 
 // Adopted from boost/functional/hash/hash.hpp
@@ -62,12 +50,32 @@ namespace std {
     struct hash<key_pair> {
         std::size_t operator()(const key_pair &data) const {
             std::size_t seed = 0;
-            hash_combine(seed, data.from);
-            hash_combine(seed, data.to);
+            if (data.from < data.to) {
+                hash_combine(seed, data.from);
+                hash_combine(seed, data.to);
+            }
+            else {
+                hash_combine(seed, data.to);
+                hash_combine(seed, data.from);
+            }
+            
             return seed;
         }
     };
 }
+
+struct state {
+    coordinate position;
+    keychain doors;
+    std::size_t distance;
+    path visited;
+};
+
+enum class Tile {
+    Wall = '#',
+    Open = '.',
+    Entrance = '@'
+};
 
 coordinate findEntrance(const vault_map &map, std::size_t rows) {
     for (std::size_t i = 0; i < rows; ++i) {
@@ -88,8 +96,17 @@ std::vector<coordinate> move(const coordinate &pos) {
     };
 }
 
+inline keychain toKeyBit(key k) {
+    return 1LL << (k - 'a');
+}
+
+inline std::size_t toKeyCode(key k) {
+    return k - 'a';
+}
+
 int AoC::A::day18() {
-    vault_map map = in::readFile<in::line<>>("test/18_1.txt");
+    // vault_map map = in::readFile<in::line<>>("test/18_1.txt");
+    vault_map map = in::readFile<in::line<>>("input/18.txt");
     const std::size_t rows = map.size();
     const std::size_t cols = map[0].length();
 
@@ -98,22 +115,29 @@ int AoC::A::day18() {
         console::fatal("Vault map has no entrance point marked by ", static_cast<char>(Tile::Entrance));
     }
 
-    std::unordered_map<key, coordinate> keyLocations;
+    // Maps entrance to distance to each key
+    std::unordered_map<key, key_pair_data> initialGrabs;
+    // Maps each key to its position
+    std::unordered_map<key, std::shared_ptr<state>> keyLocations;
+    // Maps each key to its distance and key requirements to each other key
     std::unordered_map<key_pair, key_pair_data> keyPairs;
 
     // BFS away from the entrance to record all key locations and distances from entrance
-    std::unordered_set<coordinate> visited;
-    std::queue<state> toVisit;
-    toVisit.push({ entrance, { }, { }, 0 });
+    std::unordered_map<coordinate, std::shared_ptr<state>> visited;
+    std::queue<std::shared_ptr<state>> toVisit;
+    toVisit.push(std::make_shared<state>(state { entrance, 0, 0, { } }));
+
     while (!toVisit.empty()) {
-        auto [position, keys, doors, distance] = toVisit.front();
+        auto currentState = toVisit.front();
         toVisit.pop();
-        
-        // Already been here before
-        if (visited.find(position) != visited.end()) {
-            continue;
-        }
-        visited.insert(position);
+
+        const auto &position = currentState->position;
+        auto doors = currentState->doors;
+        auto distance = currentState->distance;
+        auto &pastPath = currentState->visited;
+
+        pastPath.push_back(position);
+        visited.insert({ position, currentState });
 
         auto tile = map[position.row][position.col];
         switch (static_cast<Tile>(tile)) {
@@ -124,39 +148,43 @@ int AoC::A::day18() {
             default:
                 // Door
                 if (std::isupper(tile)) {
-                    doors.insert(std::tolower(tile));
+                    doors |= toKeyBit(std::tolower(tile));
                 }
                 // Key
                 else {
-                    keyLocations[tile] = position;
-                    keyPairs[{ static_cast<char>(Tile::Entrance), tile }] = { distance, doors };
-                    // All past keys can reach this key from the same path
-                    for (auto key : keys) {
-                        // Remove distance traveled before past key
-                        auto &[prevDist, prevDoors] = keyPairs[{ static_cast<char>(Tile::Entrance), key }];
-                        auto subDist = distance - prevDist;
-                        // Remove doors encountered before the past key
-                        keychain subDoors;
-                        std::copy_if(doors.begin(), doors.end(), std::inserter(subDoors, subDoors.begin()), [&](const auto &door) {
-                            return prevDoors.find(door) == prevDoors.end();
-                        });
-                        keyPairs[{ tile, key }] = keyPairs[{ key, tile }] = { subDist, subDoors };
+                    keyLocations.insert({ tile, currentState });
+                    initialGrabs.insert({ tile, { distance, doors } });
+                    // Map new key to all previous keys found
+                    for (const auto &[key, keyState] : keyLocations) {
+                        if (tile != key && keyPairs.find({ tile, key }) == keyPairs.end()) {
+                            // Find the last common location where the paths to the two keys combine
+                            std::shared_ptr<state> commonState;
+                            for (int i = static_cast<int>(keyState->distance); i >= 0; --i) {
+                                if (keyState->visited[i] == pastPath[i]) {
+                                    commonState = visited[pastPath[i]];
+                                    break;
+                                }
+                            }
+                            auto commonDistance = commonState->distance;
+                            auto commonDoors = commonState->doors;
+
+                            // Calculate distance between keys
+                            auto distanceBetweenKeys = distance - commonDistance;
+                            distanceBetweenKeys += keyState->distance - commonDistance;
+
+                            // Calculate the keys required to move between the keys
+                            keychain doorsBetweenKeys = (doors ^ commonDoors) | (keyState->doors ^ commonDoors);
+
+                            keyPairs.insert({ { tile, key }, { distanceBetweenKeys, doorsBetweenKeys } });
+                        }
                     }
-                    keys.insert(tile);
                 }
         }
-
         ++distance;
+        // Add poisitions we have not been to yet
         for (const auto &next : move(position)) {
-            toVisit.push({ next, keys, doors, distance });
-        }
-    }
-
-    // Calculate all other key pairs
-    for (const auto &[key1, start] : keyLocations) {
-        for (const auto &[key2, dest] : keyLocations) {
-            if (key1 != key2 && keyPairs.find({ key1, key2 }) == keyPairs.end()) {
-                // Dijkstra from start to dest
+            if (visited.find(next) == visited.end()) {
+                toVisit.push(std::make_shared<state>(state { next, doors, distance, pastPath }));
             }
         }
     }
