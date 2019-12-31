@@ -119,6 +119,7 @@ namespace IntCode {
         }
 
     public:
+        Computer() : data() { }
         Computer(const Integers &data) : data(data) { }
 
         void run() {
@@ -142,8 +143,8 @@ namespace IntCode {
         }
 
         void load(const Integers &program) {
+            reset();
             data = program;
-            ip = 0;
         }
 
         bool isRunning() {
