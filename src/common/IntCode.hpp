@@ -9,13 +9,13 @@ namespace IntCode {
     using Integers = std::vector<Int>;
     using Buffer = std::list<Int>;
 
-    enum AddressMode {
+    enum class AddressMode {
         Position = 0,
         Immediate = 1,
         Relative = 2
     };
 
-    enum Instruction {
+    enum class Instruction {
         Add = 1,
         Multiply = 2,
         Input = 3,
@@ -33,6 +33,11 @@ namespace IntCode {
         AwaitingInput
     };
 
+    enum class Output {
+        Int,
+        ASCII
+    };
+
     class Computer {
     private:
         Status status = Status::Good;
@@ -41,6 +46,7 @@ namespace IntCode {
         std::size_t rb = 0;
         bool running = false;
         bool finished = false;
+        Output outputMode = Output::Int;
 
         Buffer in;
         Buffer out;
@@ -52,10 +58,10 @@ namespace IntCode {
         Int read(const Int modes, const Int pos) {
             int paramMode = (modes / POW10[pos - 1]) % 10;
             std::size_t address { };
-            switch (paramMode) {
-                case Position: address = data[ip + pos]; break;
-                case Immediate: address = ip + pos; break;
-                case Relative: address = rb + data[ip + pos]; break;
+            switch (static_cast<AddressMode>(paramMode)) {
+                case AddressMode::Position: address = data[ip + pos]; break;
+                case AddressMode::Immediate: address = ip + pos; break;
+                case AddressMode::Relative: address = rb + data[ip + pos]; break;
                 default: console::fatal("Unexpected address mode at position ", ip);
             }
             if (address >= data.size()) {
@@ -67,9 +73,9 @@ namespace IntCode {
         Int &write(const Int modes, const Int pos) {
             int paramMode = (modes / POW10[pos - 1]) % 10;
             std::size_t address { };
-            switch (paramMode) {
-                case Position: address = data[ip + pos]; break;
-                case Relative: address = rb + data[ip + pos]; break;
+            switch (static_cast<AddressMode>(paramMode)) {
+                case AddressMode::Position: address = data[ip + pos]; break;
+                case AddressMode::Relative: address = rb + data[ip + pos]; break;
                 default: console::fatal("Unexpected address mode at position ", ip);
             }
             if (address >= data.size()) {
@@ -82,17 +88,17 @@ namespace IntCode {
             Int opcode = instr % 100;
             Int modes = instr / 100;
 
-            switch (opcode) {
-                case Add: write(modes, 3) = read(modes, 1) + read(modes, 2); ip += 4; break;
-                case Multiply: write(modes, 3) = read(modes, 1) * read(modes, 2); ip += 4; break;
-                case Input: handleInput(opcode, modes); break;
-                case Output: output(read(modes, 1)); ip += 2; break;
-                case JumpIfTrue: read(modes, 1) != 0 ? ip = read(modes, 2) : ip += 3; break;
-                case JumpIfFalse: read(modes, 1) == 0 ? ip = read(modes, 2) : ip += 3; break;
-                case LessThan: write(modes, 3) = read(modes, 1) < read(modes, 2) ? 1 : 0; ip += 4; break;
-                case Equals: write(modes, 3) = read(modes, 1) == read(modes, 2) ? 1 : 0; ip += 4; break;
-                case AdjustRelativeBase: rb += read(modes, 1); ip += 2; break;
-                case Exit: running = false; finished = true; break;
+            switch (static_cast<Instruction>(opcode)) {
+                case Instruction::Add: write(modes, 3) = read(modes, 1) + read(modes, 2); ip += 4; break;
+                case Instruction::Multiply: write(modes, 3) = read(modes, 1) * read(modes, 2); ip += 4; break;
+                case Instruction::Input: handleInput(opcode, modes); break;
+                case Instruction::Output: output(read(modes, 1)); ip += 2; break;
+                case Instruction::JumpIfTrue: read(modes, 1) != 0 ? ip = read(modes, 2) : ip += 3; break;
+                case Instruction::JumpIfFalse: read(modes, 1) == 0 ? ip = read(modes, 2) : ip += 3; break;
+                case Instruction::LessThan: write(modes, 3) = read(modes, 1) < read(modes, 2) ? 1 : 0; ip += 4; break;
+                case Instruction::Equals: write(modes, 3) = read(modes, 1) == read(modes, 2) ? 1 : 0; ip += 4; break;
+                case Instruction::AdjustRelativeBase: rb += read(modes, 1); ip += 2; break;
+                case Instruction::Exit: running = false; finished = true; break;
                 default: console::fatal("Unexpected opcode at position ", ip);
             }
         }
@@ -171,6 +177,11 @@ namespace IntCode {
             return data[i];
         }
 
+        Computer &operator<<(Output flag) {
+            outputMode = flag;
+            return *this;
+        }
+
         Computer &operator<<(Int val) {
             in.push_back(val);
             return *this;
@@ -183,8 +194,17 @@ namespace IntCode {
         }
 
         friend std::ostream &operator<<(std::ostream &out, Computer &comp) {
-            for (auto val : comp.out) {
-                out << val << std::endl;
+            switch (comp.outputMode) {
+                case Output::ASCII:
+                    for (auto val : comp.out) {
+                        out << static_cast<char>(val);
+                    }
+                    break;
+                default:
+                    for (auto val : comp.out) {
+                        out << val << std::endl;
+                    }
+                    break;
             }
             comp.out.clear();
             return out;
