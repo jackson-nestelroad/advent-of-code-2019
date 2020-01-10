@@ -108,7 +108,6 @@ struct linear_modular_function {
 
 template <std::size_t size>
 linear_modular_function getShuffleEquation(std::vector<cards::shuffle::technique> shuffle) {
-    const bigint zero { 0 };
     bigint a = 1;
     bigint b = 0;
 
