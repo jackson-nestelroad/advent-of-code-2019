@@ -26,7 +26,9 @@
 #include "common/InputReader.hpp"
 #include "common/IntCode.hpp"
 #include "common/Integer.hpp"
+#include "common/String.hpp"
 #include "common/Templates.hpp"
+#include "common/bigint/BigInt.h"
 
 namespace AoC {
     namespace A {
@@ -79,7 +81,7 @@ namespace AoC {
         int day19();
         int day20();
         int day21();
-        int day22();
+        long long day22();
         int day33();
         int day24();
         int day25();
