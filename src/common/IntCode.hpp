@@ -153,23 +153,23 @@ namespace IntCode {
             data = program;
         }
 
-        bool isRunning() {
+        bool isRunning() const {
             return running;
         }
 
-        bool isFinished() {
+        bool isFinished() const {
             return finished;
         }
 
-        bool hasInput() {
+        bool hasInput() const {
             return !in.empty();
         }
 
-        bool hasOutput() {
+        bool hasOutput() const {
             return !out.empty();
         }
 
-        Status getStatus() {
+        Status getStatus() const {
             return status;
         }
 
