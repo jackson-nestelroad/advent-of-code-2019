@@ -64,12 +64,12 @@ namespace SpringScript {
     }
 }
 
-static IntCode::Computer &operator<<(IntCode::Computer &comp, const std::string &str) {
-    for (auto it = str.begin(); it != str.end(); ++it) {
-        comp << *it;
-    }
-    return comp;
-}
+//static IntCode::Computer &operator<<(IntCode::Computer &comp, const std::string &str) {
+//    for (auto it = str.begin(); it != str.end(); ++it) {
+//        comp << *it;
+//    }
+//    return comp;
+//}
 
 static IntCode::Computer &operator<<(IntCode::Computer &comp, const std::vector<std::string> &strs) {
     for (auto it = strs.begin(); it != strs.end(); ++it) {
