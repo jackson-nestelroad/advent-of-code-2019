@@ -128,6 +128,32 @@ namespace IntCode {
         Computer() : data() { }
         Computer(const Integers &data) : data(data) { }
 
+        Computer(const Computer &other) :
+            status(other.status),
+            data(other.data),
+            ip(other.ip),
+            rb(other.rb),
+            running(other.running),
+            finished(other.finished),
+            outputMode(other.outputMode),
+            in(other.in),
+            out(other.out)
+        { }
+
+        Computer &operator=(const Computer &other) {
+            status = other.status;
+            data = other.data;
+            ip = other.ip;
+            rb = other.rb;
+            running = other.running;
+            finished = other.finished;
+            outputMode = other.outputMode;
+            in = other.in;
+            out = other.out;
+
+            return *this;
+        }
+
         void run() {
             status = Status::Good;
             running = true;
@@ -187,6 +213,13 @@ namespace IntCode {
             return *this;
         }
 
+        Computer &operator<<(const std::string &val) {
+            for (char c : val) {
+                in.push_back(c);
+            }
+            return *this;
+        }
+
         Computer &operator>>(Int &val) {
             val = out.front();
             out.pop_front();
@@ -215,6 +248,10 @@ namespace IntCode {
             std::copy(out.begin(), out.end(), std::back_inserter(flushed));
             out.clear();
             return flushed;
+        }
+
+        void clearOutput() {
+            out.clear();
         }
 
         Int popLastOutput() {

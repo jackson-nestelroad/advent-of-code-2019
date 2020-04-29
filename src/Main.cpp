@@ -15,7 +15,7 @@ void run(const std::string &text, const std::function<long long()> &solution) {
 }
 
 int main() {
-    run("Part A: ", AoC::A::day09);
-    run("Part B: ", AoC::B::day09);
+    run("Part A: ", AoC::A::day25);
+    run("Part B: ", AoC::B::day25);
     return 0;
 }
