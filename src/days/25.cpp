@@ -152,18 +152,18 @@ int AoC::A::day25() {
                         else {
                             // We may be allowed to pick this up
                             if (std::find(badItems.begin(), badItems.end(), option) == badItems.end()) {
-                                // Try picking up the item on a different computer
+                                // Make a backup incase we are killed by this item
                                 IntCode::Computer backup = comp;
-                                backup << "take " << option << '\n';
-                                backup.run();
+                                comp << "take " << option << '\n';
+                                comp.run();
                                 // We died, blacklist the item
-                                if (backup.isFinished() && backup.getStatus() != IntCode::Status::AwaitingInput) {
+                                if (comp.isFinished() && comp.getStatus() != IntCode::Status::AwaitingInput) {
                                     badItems.insert(option);
+                                    comp = backup;
                                 }
                                 // We lived, keep the item
                                 else {
                                     inventory.push_back(option);
-                                    comp = backup;
                                     comp.clearOutput();
                                 }
                             }
